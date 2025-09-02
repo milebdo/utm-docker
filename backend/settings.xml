@@ -16,7 +16,7 @@
                 </repository>
                 <repository>
                     <id>utmstack</id>
-                    <url>https://maven.pkg.github.com/utmstack/**</url>
+                    <url>https://maven.pkg.github.com/utmstack/UTMStack</url>
                 </repository>
             </repositories>
         </profile>

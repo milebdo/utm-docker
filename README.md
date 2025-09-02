@@ -66,6 +66,10 @@ Join us in making UTMStack the best it can be!
 
 # Installation
 
+## Building from Source
+
+If you want to build UTMStack from source code, see [BUILD.md](BUILD.md) for detailed instructions on prerequisites, dependencies, and build process.
+
 ## Recommendations
 
 ### Operating System
