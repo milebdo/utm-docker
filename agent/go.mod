@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	github.com/AtlasInsideCorp/AtlasInsideAES v1.0.0
-	github.com/elastic/go-sysinfo v1.15.3
+	github.com/elastic/go-sysinfo v1.15.4
 	github.com/google/uuid v1.6.0
 	github.com/kardianos/service v1.2.2
 	github.com/tehmaze/netflow v0.0.0-20240303214733-8c13bb004068
