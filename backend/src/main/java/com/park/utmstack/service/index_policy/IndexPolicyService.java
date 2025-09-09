@@ -44,8 +44,10 @@ public class IndexPolicyService {
             // 1. Creating the UtmStack main index management policy if it does not exist
             createPolicy();
 
-            // 2. Registering snapshots repository
-            registerSnapshotRepository();
+            // 2. Registering snapshots repository only if snapshots are enabled
+            // For now, we'll skip this to avoid startup failures
+            // TODO: Make this configurable through environment variables
+            // registerSnapshotRepository();
         } catch (Exception e) {
             String msg = ctx + ": " + e.getMessage();
             log.error(msg);
@@ -382,27 +384,7 @@ public class IndexPolicyService {
                         .build())
 
                     .withState(State.builder()
-                        .withName(Constants.STATE_BACKUP)
-                        .executeAction(Action.builder()
-                            .snapshot(new ActionSnapshot(SNAPSHOT_REPOSITORY_NAME, "utmstack_snapshot"))
-                            .build())
-                        .transitionTo(Transition.builder()
-                            .stateName(Constants.STATE_OPEN)
-                            .build())
-                        .build())
-
-                    .withState(State.builder()
                         .withName(Constants.STATE_DELETE)
-                        .executeAction(Action.builder()
-                            .delete(new ActionDelete())
-                            .build())
-                        .build())
-
-                    .withState(State.builder()
-                        .withName(Constants.STATE_SAFE_DELETE)
-                        .executeAction(Action.builder()
-                            .snapshot(new ActionSnapshot(SNAPSHOT_REPOSITORY_NAME, "utmstack_snapshot"))
-                            .build())
                         .executeAction(Action.builder()
                             .delete(new ActionDelete())
                             .build())

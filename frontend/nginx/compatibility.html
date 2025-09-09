@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>UTMSTACK Technology</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Browser compatibility meta tags -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    
+    <meta name="author" content="Jorge Dieguez Pérez">
+    <meta name="author" content="Leonardo Mora Lopez">
+    <meta content="Osmany Montero" name="author">
+    <meta content="Ricardo Valdes" name="author">
+    
+    <link id="appFavicon" href="/assets/img/logo_UTMStack.svg" rel="icon" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+    <link href="assets/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/bootstrap_limitless.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/layout.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/components.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/colors.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="styles.a1e33bc90354a216a7ea.css">
+    
+    <!-- JavaScript Compatibility Wrapper - Load First -->
+    <script src="js-compatibility.js"></script>
+    
+    <!-- JavaScript Transformer for ES6 Compatibility (Minimal) -->
+    <script src="js-transformer.js"></script>
+    
+    <!-- Basic polyfills for older browser support -->
+    <script>
+        // Global polyfill for older browsers
+        if (typeof window !== 'undefined') {
+            window.global = window;
+        }
+        
+        // Console polyfill for older browsers
+        if (!window.console) {
+            window.console = {
+                log: function() {},
+                error: function() {},
+                warn: function() {},
+                info: function() {}
+            };
+        }
+    </script>
+</head>
+<body id="utm-body">
+    <app-root></app-root>
+    
+    <!-- Load Angular application scripts normally -->
+    <script type="text/javascript" src="es2015-polyfills.f7108415cfd9bebd16be.js"></script>
+    <script type="text/javascript" src="polyfills.2e09f5a7aa9d10d93578.js"></script>
+    <script type="text/javascript" src="runtime.4d8a61f4a5cf740ed304.js"></script>
+    <script type="text/javascript" src="scripts.8ab6740a0988d6579867.js"></script>
+    <script type="text/javascript" src="main.3b907159dda75f07e685.js"></script>
+</body>
+</html>

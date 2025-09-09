@@ -40,19 +40,9 @@
               "node_modules/highlight.js/styles/github.css",
               "src/styles.scss"
             ],
-            "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/tether/dist/js/tether.min.js",
-              "node_modules/popper.js/dist/popper.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js",
-              "src/assets/vendor/animated-burguers/index.js",
-              "node_modules/interactjs/dist/interact.js",
-              "node_modules/echarts/dist/echarts.js",
-              "node_modules/echarts-wordcloud/dist/echarts-wordcloud.js",
-              "node_modules/leaflet/dist/leaflet.js",
-              "node_modules/leaflet.heat/dist/leaflet-heat.js",
-              "node_modules/table-dragger/dist/table-dragger.min.js"
-            ],
+              "scripts": [
+                "node_modules/jquery/dist/jquery.min.js"
+              ],
             "es5BrowserSupport": true
           },
           "configurations": {
@@ -63,7 +53,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": false,
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
@@ -71,7 +61,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
+              "buildOptimizer": false,
               "budgets": [
                 {
                   "type": "initial",

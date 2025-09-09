@@ -1,0 +1,13 @@
+go 1.19
+
+use (
+	./agent
+	./agent-manager
+	./aws
+	./bitdefender
+	./correlation
+	./log-auth-proxy
+	./office365
+	./soc-ai
+	./sophos
+)

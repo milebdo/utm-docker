@@ -1,0 +1,143 @@
+version: "3.9"
+
+services:
+  # OpenSearch (Elasticsearch) service
+  opensearch:
+    image: opensearchproject/opensearch:2.4.0
+    container_name: utmstack-opensearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.name=utmstack-cluster
+      - node.name=utmstack-node
+      - plugins.security.disabled=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - utmstack-network
+
+  # Logstash service
+  logstash:
+    build:
+      context: ./etc/logstash
+    container_name: utmstack-logstash
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+    volumes:
+      - ./filters:/usr/share/logstash/filters
+      - ./etc/logstash/pipelines.yml:/usr/share/logstash/config/pipelines.yml
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    depends_on:
+      - opensearch
+    networks:
+      - utmstack-network
+
+  # PostgreSQL database
+  db:
+    image: postgres:15
+    container_name: utmstack-db
+    environment:
+      POSTGRES_DB: utmstack
+      POSTGRES_USER: utm
+      POSTGRES_PASSWORD: utmstack
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - utmstack-network
+
+  # Agent Manager service
+  agent-manager:
+    build:
+      context: ./agent-manager
+    container_name: utmstack-agent-manager
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: utmstack
+      DB_USER: utm
+      DB_PASSWORD: utmstack
+    volumes:
+      - ./certs:/cert
+    depends_on:
+      - db
+    ports:
+      - "50051:50051"
+    networks:
+      - utmstack-network
+
+  # Backend service
+  backend:
+    build:
+      context: ./backend
+    container_name: utmstack-backend
+    environment:
+      # Database configuration
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: utmstack
+      DB_USER: utm
+      DB_PASS: utmstack
+      
+      # OpenSearch configuration
+      ELASTICSEARCH_HOST: opensearch
+      ELASTICSEARCH_PORT: 9200
+      
+      # Agent Manager gRPC configuration
+      GRPC_AGENT_MANAGER_HOST: agent-manager
+      GRPC_AGENT_MANAGER_PORT: 50051
+      
+      # Security keys (generate secure keys for production)
+      INTERNAL_KEY: utmstack-internal-key-2024
+      ENCRYPTION_KEY: utmstack-encryption-key-2024
+      
+      # Logstash configuration
+      LOGSTASH_URL: http://logstash:9600
+      
+      # Server configuration
+      SERVER_NAME: utmstack-server
+    depends_on:
+      - db
+      - opensearch
+      - agent-manager
+    ports:
+      - "8080:8080"
+    networks:
+      - utmstack-network
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+    container_name: utmstack-frontend
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - utmstack-network
+
+volumes:
+  db_data:
+  opensearch_data:
+
+networks:
+  utmstack-network:
+    driver: bridge

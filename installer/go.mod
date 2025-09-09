@@ -1,8 +1,6 @@
 module github.com/utmstack/UTMStack/installer
 
-go 1.23.0
-
-toolchain go1.23.5
+go 1.19
 
 require (
 	github.com/cloudfoundry/gosigar v1.3.92

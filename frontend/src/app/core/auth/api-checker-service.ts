@@ -19,6 +19,23 @@ export class ApiServiceCheckerService {
   }
 
   checkApiAvailability() {
+    // Make immediate API call first
+    this.http
+      .get(this.resourceUrl, { observe: 'response' })
+      .pipe(first())
+      .subscribe(
+        resp => {
+          if (resp.status === 200) {
+            this.isOnline.next(true);
+            this.stopInterval$.next(true);
+          } else {
+            this.isOnline.next(false);
+          }
+        },
+        err => this.isOnline.next(false)
+      );
+
+    // Then set up interval for subsequent checks
     interval(this.retryInterval)
       .pipe(takeUntil(this.stopInterval$))
       .subscribe(() => {

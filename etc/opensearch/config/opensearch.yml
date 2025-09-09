@@ -1,0 +1,15 @@
+# OpenSearch Configuration
+cluster.name: utmstack-cluster
+node.name: utmstack-node
+discovery.type: single-node
+
+# Backup repository configuration
+path.repo: ["/usr/share/opensearch/backups"]
+
+# Security settings (disabled for development)
+plugins.security.disabled: true
+
+# Network settings
+network.host: 0.0.0.0
+http.port: 9200
+transport.port: 9300

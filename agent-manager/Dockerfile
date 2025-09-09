@@ -1,31 +1,55 @@
-FROM ubuntu:24.04
+# Build stage
+FROM golang:1.23-alpine AS builder
 
-COPY agent-manager /app/
-COPY ./dependencies/agent/ /dependencies/agent/
-COPY ./dependencies/collector/ /dependencies/collector/
+# Install build dependencies
+RUN apk add --no-cache git ca-certificates tzdata
 
-# Install jq
-RUN apt-get update && \
-    apt-get install -y ca-certificates jq wget && \
-    update-ca-certificates && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Set working directory
+WORKDIR /app
 
-# Install grpcurl
-RUN GRPCURL_VERSION=1.8.1 && \
-    wget -O /tmp/grpcurl.tar.gz https://github.com/fullstorydev/grpcurl/releases/download/v${GRPCURL_VERSION}/grpcurl_${GRPCURL_VERSION}_linux_x86_64.tar.gz && \
-    tar -xzf /tmp/grpcurl.tar.gz -C /usr/local/bin && \
-    rm /tmp/grpcurl.tar.gz && \
-    chmod +x /usr/local/bin/grpcurl
+# Copy go mod files
+COPY go.mod go.sum ./
 
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Tidy up dependencies and build the binary
+RUN go mod tidy && CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o agent-manager .
+
+# Runtime stage
+FROM alpine:latest
+
+# Install runtime dependencies
+RUN apk --no-cache add ca-certificates tzdata
+
+# Create app user
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
+
+# Set working directory
+WORKDIR /app
+
+# Copy binary from builder stage
+COPY --from=builder /app/agent-manager .
+
+# Copy certificates directory (will be mounted at runtime)
+RUN mkdir -p /cert
+
+# Change ownership to app user
+RUN chown -R appuser:appgroup /app /cert
+
+# Switch to app user
+USER appuser
 
 # Expose the gRPC agent-manager port
 EXPOSE 50051
-EXPOSE 8080
 
-# Set the health check
-# HEALTHCHECK --interval=60s --timeout=5s --start-period=5s --retries=3 CMD grpcurl -insecure -plaintext -d '{"service": ""}' localhost:50051 grpc.health.v1.Health/Check | jq -e '.status == "SERVING"' || exit 1
-
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:50051/health || exit 1
 
 # Run the agent-manager binary
-CMD ["/app/agent-manager"]
+CMD ["./agent-manager"]
